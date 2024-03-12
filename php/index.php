@@ -1,27 +1,35 @@
 <?php
   session_start();
-
   // Inicializar el array de sesión si aún no existe
-if (!isset($_SESSION["numeros"])) {
-  $_SESSION["numeros"] = array();
-}
+  if (!isset($_SESSION["numeros"])) {
+    $_SESSION["numeros"] = array();
+    $_SESSION["numero_historico"] = array();
+  }
 
-// Verificar si el formulario ha sido enviado
-if (isset($_POST["numero"])) {
-  // Obtener el número enviado por POST
-  $numero = $_POST["numero"];
-}  
-  if (is_numeric($numero)){
-    // Agregar el número al array de sesión
-  array_push($_SESSION["numeros"], $numero);
+  // Verificar si el formulario ha sido enviado
+  // if (isset($_POST["numero"]) && $_POST["numero"] !== null && $_POST["numero"] !== "") {
+  //   // Obtener el número enviado por POST
+  //   //$numero = $_POST["numero"];
+  //   // Agregar el número al array de sesión
+  //   array_push($_SESSION["numeros"], $_POST["numero"]);
+  // }
+  
   if(empty($_SESSION["numeros"])) {
     $_SESSION["resultado"]= 0;
   }
+  
+  
+  // if (isset($_POST["confirmar"]) && empty($_POST["numero"])){
+  //   echo "<script>alert('ERROR:Número inválido ingresa un número valido.');</script>";
+  // }
+  if(isset($_POST["confirmar"]) && $_POST["numero"] == ""){
+    echo "<script>alert('ERROR:Número inválido ingresa un número valido.');</script>";
+  }
+  // Verificar si se ha enviado el formulario y Verificar si hay números en la sesión
+  if (isset($_POST["confirmar"]) && $_POST["numero"] !== "") {
 
-  // Verificar si se ha enviado el formulario
-  if (isset($_POST["confirmar"])) {
-    // Verificar si hay números en la sesión
-    if (!empty($_SESSION["numeros"])) {
+        // Agregar el número al array de sesión
+        array_push($_SESSION["numeros"], $_POST["numero"]);
         // Obtener el último número ingresado
         $operacion = $_POST["operacion"];
         $operador = end($_SESSION["numeros"]);
@@ -30,12 +38,15 @@ if (isset($_POST["numero"])) {
         switch ($operacion) {
             case "sumar":
                 $_SESSION["resultado"] += $operador;
+                $_SESSION["numero_historico"][]= "+". $operador;
                 break;
             case "restar":
                 $_SESSION["resultado"] -= $operador;
+                $_SESSION["numero_historico"][]= "-". $operador;
                 break;
             case "multiplicar":
                 $_SESSION["resultado"] *= $operador;
+                $_SESSION["numero_historico"][]= "*". $operador;
                 break;
             case "dividir":
                 if ($operador == 0) {
@@ -44,24 +55,25 @@ if (isset($_POST["numero"])) {
                 }else {
                   $_SESSION["resultado"] /= $operador;
                   $_SESSION["resultado"] = round($_SESSION["resultado"],2);
+                  $_SESSION["numero_historico"][]= "/". $operador;
                 }
                 break;
             default:
-              echo "<script>alert('Número inválido1, ingresa un número valido.');</script>";
+              echo "<script>alert('E:Número inválido1, ingresa un número valido.');</script>";
         }
-      }
+      
     }
-  } else {
-    if (isset($_POST["reset"])) {
-      $_SESSION["numeros"] = array();
-      $_SESSION["resultado"] = 0;
-    }else{
-    echo "<script>alert('Número inválido ingresa un número valido.');</script>";
-    }
+
+    
+  
+
+  if (isset($_POST["reset"])) {
+    $_SESSION["numeros"] = array();
+    $_SESSION["numero_historico"] = array();
+    $_SESSION["resultado"] = 0;
   }
-
-
-
+    
+  
 ?>
 <!doctype html>
 <html lang="en">
@@ -91,7 +103,7 @@ if (isset($_POST["numero"])) {
                 <form action="index.php" method="post">
                   <div class="mb-3">
                     <label class="form-label">Numero en total = <?php echo $_SESSION["resultado"]; ?></label>
-                    <input type="text" name="numero" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                    <input type="number" name="numero" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                     <select id="operacion" name="operacion">
                       <option value="sumar">Suma</option>
                       <option value="restar">Resta</option>
@@ -102,7 +114,7 @@ if (isset($_POST["numero"])) {
                     <button type="submit" name="reset">Resetear</button>
                     <!-- Imprimir cada elemento del array -->
                     <?php
-                      foreach ($_SESSION["numeros"] as $elemento) {
+                      foreach ($_SESSION["numero_historico"] as $elemento) {
                         echo "<br>". $elemento ;
                       }
                     ?>
