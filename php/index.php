@@ -4,30 +4,20 @@
   if (!isset($_SESSION["numeros"])) {
     $_SESSION["numeros"] = array();
     $_SESSION["numero_historico"] = array();
-  }
 
-  // Verificar si el formulario ha sido enviado
-  // if (isset($_POST["numero"]) && $_POST["numero"] !== null && $_POST["numero"] !== "") {
-  //   // Obtener el número enviado por POST
-  //   //$numero = $_POST["numero"];
-  //   // Agregar el número al array de sesión
-  //   array_push($_SESSION["numeros"], $_POST["numero"]);
-  // }
-  
+  }
+  //Iniciar resultado cuando array numeros es vacio
   if(empty($_SESSION["numeros"])) {
     $_SESSION["resultado"]= 0;
   }
   
-  
-  // if (isset($_POST["confirmar"]) && empty($_POST["numero"])){
-  //   echo "<script>alert('ERROR:Número inválido ingresa un número valido.');</script>";
-  // }
+  //Tira error si click buton confirmar pero input esta vacio
   if(isset($_POST["confirmar"]) && $_POST["numero"] == ""){
     echo "<script>alert('ERROR:Número inválido ingresa un número valido.');</script>";
   }
   // Verificar si se ha enviado el formulario y Verificar si hay números en la sesión
   if (isset($_POST["confirmar"]) && $_POST["numero"] !== "") {
-
+        
         // Agregar el número al array de sesión
         array_push($_SESSION["numeros"], $_POST["numero"]);
         // Obtener el último número ingresado
@@ -64,16 +54,66 @@
       
     }
 
-    
-  
-
+  //Si aprete resetear reinicia todo  
   if (isset($_POST["reset"])) {
     $_SESSION["numeros"] = array();
     $_SESSION["numero_historico"] = array();
     $_SESSION["resultado"] = 0;
   }
+
+  if (isset($_POST["confirmar_operacion"]) ) {
     
+    $_SESSION["numero_elegido"] = array();
+
+    // Obtener el último número ingresado
+    $operacion_elegida = $_POST["operacion_elegida"];
+    
+    
+    switch ($operacion_elegida) {
+        case "sumar":
+          foreach ($_SESSION["numero_historico"] as $elemento) {
+            $simbolo =  substr($elemento,0,1);
+            if ($simbolo == '+'){
+              $_SESSION["numero_elegido"][] = $elemento;
+            }
+          }
+            break;
+        case "restar":
+          foreach ($_SESSION["numero_historico"] as $elemento) {
+            $simbolo =  substr($elemento,0,1);
+            if ($simbolo == '-'){
+              $_SESSION["numero_elegido"][] = $elemento;
+            }
+          }
+            break;
+        case "multiplicar":
+          foreach ($_SESSION["numero_historico"] as $elemento) {
+            $simbolo =  substr($elemento,0,1);
+            if ($simbolo == '*'){
+              $_SESSION["numero_elegido"][] = $elemento;
+            }
+          }
+            break;
+        case "dividir":
+          foreach ($_SESSION["numero_historico"] as $elemento) {
+            $simbolo =  substr($elemento,0,1);
+            if ($simbolo == '/'){
+              $_SESSION["numero_elegido"][] = $elemento;
+            }
+          }
+            break;
+        default:
+          echo "<script>alert('E:No hay operacion elegida.');</script>";
+    }
   
+}
+    //Si aprete resetear reinicia todo  
+    if (isset($_POST["reset"])) {
+      $_SESSION["numeros"] = array();
+      $_SESSION["numero_historico"] = array();
+      $_SESSION["resultado"] = 0;
+      $_SESSION["numero_elegido"] = array();
+    }
 ?>
 <!doctype html>
 <html lang="en">
@@ -115,6 +155,19 @@
                     <!-- Imprimir cada elemento del array -->
                     <?php
                       foreach ($_SESSION["numero_historico"] as $elemento) {
+                        echo "<br>". $elemento ;
+                      }
+                    ?>
+                    <br><br>
+                    <select name="operacion_elegida">
+                      <option value="sumar">Suma</option>
+                      <option value="restar">Resta</option>
+                      <option value="multiplicar">Multiplicación</option>
+                      <option value="dividir">División</option>
+                    </select>
+                    <button type="submit" name="confirmar_operacion">Confirmar</button>
+                    <?php
+                      foreach ($_SESSION["numero_elegido"] as $elemento) {
                         echo "<br>". $elemento ;
                       }
                     ?>
