@@ -54,13 +54,6 @@
       
     }
 
-  //Si aprete resetear reinicia todo  
-  if (isset($_POST["reset"])) {
-    $_SESSION["numeros"] = array();
-    $_SESSION["numero_historico"] = array();
-    $_SESSION["resultado"] = 0;
-  }
-
   if (isset($_POST["confirmar_operacion"]) ) {
     
     $_SESSION["numero_elegido"] = array();
@@ -112,6 +105,8 @@
       $_SESSION["numeros"] = array();
       $_SESSION["numero_historico"] = array();
       $_SESSION["resultado"] = 0;
+    }
+    if (isset($_POST["reset_filtro"])) {
       $_SESSION["numero_elegido"] = array();
     }
 ?>
@@ -159,6 +154,8 @@
                       }
                     ?>
                     <br><br>
+                    <label class="form-label">Filtro</label>
+                    <br>
                     <select name="operacion_elegida">
                       <option value="sumar">Suma</option>
                       <option value="restar">Resta</option>
@@ -166,6 +163,7 @@
                       <option value="dividir">División</option>
                     </select>
                     <button type="submit" name="confirmar_operacion">Confirmar</button>
+                    <button type="submit" name="reset_filtro">Resetear</button>
                     <?php
                       foreach ($_SESSION["numero_elegido"] as $elemento) {
                         echo "<br>". $elemento ;
